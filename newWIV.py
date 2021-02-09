@@ -9,3 +9,4 @@ for test in folderList:
     #print(splited)
     tmp = test + '/*.dat'
     pprint.pprint(tmp)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    print('Changed!!')                                   
