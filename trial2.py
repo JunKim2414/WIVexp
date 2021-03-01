@@ -1,12 +1,45 @@
 import glob
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from pprint import pprint
 import math
 
-class FileHandler():
-    def parse(self, Dir):
-        folderDir = glob.glob(Dir)
+class FileHandler:
+    def __init__(self, dir):
+        self.dir = dir
+        self.parsing()
+        self.getPower()
+
+    def parsing(self):
+        data = pd.read_csv(self.dir, sep = '\t')
+        data = data.to_numpy()
+
+        self.t = np.array(data[:,0])
+        self.V = np.array(data[:,1])
+        self.I = np.array(data[:,2])
+        self.PM = np.array(data[:,3])
+        self.DM = np.array(data[:,4])
+        print('t length : {}'.format(len(self.t)))
+        print(self.t)
+
+
+    def getPower(self):
+        ohm = 10000
+        Vrms = math.sqrt(sum([i**2 for i in self.V])/len(self.V))
+        self.power = Vrms**2/self.ohm
+
+test = FileHandler('../wiv_raw_data/S-S5-W047/020.dat')
+
+
+
+        # pd.read_csv(dir,\
+        # names = ['t', 'v', 'I', 'p', 'd','tmp'],\
+        # skiprows = 1, sep='\t', header = None)
+
+
+'''
+        folderDir = glob.glob(dir)
         # folderDir is a directory like "/Users/junkim/workspace/wiv_raw_data/C-S3-W130"
         for i in folderDir:
             testfolder = i.split('/')[-1]
@@ -46,7 +79,7 @@ class FFT():
 
 
 
-'''
+
 
 def powerCalc():
 
@@ -85,4 +118,4 @@ for i in folderDir:
         # pprint(data['v'])
 
 
-    '''
+'''
