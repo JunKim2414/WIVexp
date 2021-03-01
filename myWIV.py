@@ -70,7 +70,7 @@ class project():
         plt.legend(self.resultDict.keys())
 
 if __name__ =='__main__':
-    testcaselist = glob.glob('../data/*')
+    testcaselist = glob.glob('../wiv_raw_data/*')
     proj = project(testcaselist)
     proj.report()
     plt.show()
