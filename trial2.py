@@ -4,28 +4,66 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pprint import pprint
 import math
+from scipy.fftpack import fft,fftfreq,ifft
 
 class FileHandler:
     def __init__(self, dir):
         self.dir = dir
         self.parsing()
-        self.getPower()
+        # self.getPower()
+
+    # def parsing2(self):
+    #     tmpdata = pd.read_csv(self.dir, delimiter = '\t')
+    #     data = tmpdata.to_numpy()
+    #     print(data)
+    #     self.t = np.array(data[:,0])
+    #     self.V = np.array(data[:,1])
+    #     self.I = np.array(data[:,2])
+    #     self.PM = np.array(data[:,3])
+    #     self.DM = np.array(data[:,4])
+    #     # plt.plot(self.t, self.V, '-')
 
     def parsing(self):
-        data = pd.read_csv(self.dir, sep = '\t')
-        data = data.to_numpy()
+        tmpdata = pd.read_csv(self.dir, \
+        names = ['t', 'V', 'I', 'PM', 'DM', 'tmp'], \
+        skiprows = 1, sep="\t", header = None)
+        data = tmpdata.drop(['tmp'], axis=1) #delete tmp column.
+        data.plot(x='t', y='V')
+        plt.show()
 
-        self.t = np.array(data[:,0])
-        self.V = np.array(data[:,1])
-        self.I = np.array(data[:,2])
-        self.PM = np.array(data[:,3])
-        self.DM = np.array(data[:,4])
-        print('t length : {}'.format(len(self.t)))
-        print(self.t)
+    def g_filter(self):
+        mean = self.mean()
+        std = self.std()
+        tmp = []
+        for i in self:
+            if i>mean-3*std and i<mean+3*std:
+                tmp.append(i)
+            else:
+                tmp.append(0)
+        tmp_series = pd.Series(tmp)
 
+    def Moving_averaging(series,window):
+        tmp = []
+        window_value_list= []
+        if series.name=='t':
+            return series
+        else:
+            for i in series:
+                window_value_list.append(i)
+                if len(window_value_list)<window:
+                    tmp.append(i)
+                elif len(window_value_list)==window:
+                    mean = sum(window_value_list)/len(window_value_list)
+                    tmp.append(mean)
+                else:
+                    #longer than 'window'
+                    window_value_list.pop(0) # eliminate first value in list
+                    mean = sum(window_value_list)/len(window_value_list)
+                    tmp.append(mean)
+            return tmp
 
     def getPower(self):
-        ohm = 10000
+        self.ohm = 10000
         Vrms = math.sqrt(sum([i**2 for i in self.V])/len(self.V))
         self.power = Vrms**2/self.ohm
 
